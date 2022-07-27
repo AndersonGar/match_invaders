@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class EnemyGenerator : MonoBehaviour
 {
+    //Enemy instances
     public GameObject enemyPrefab;
     public List<Color> colors;
+    //Projectile instance
+    public GameObject projectilePrefab;
+    GameObject projectileEnemy;
     //Ubication Variables
     public Vector2 initPos;
     public float offset_x, offset_y;
@@ -15,6 +19,8 @@ public class EnemyGenerator : MonoBehaviour
     void Start()
     {
         Generate();
+        GenerateProjectile();
+        Shoot();
     }
 
     // Update is called once per frame
@@ -29,9 +35,11 @@ public class EnemyGenerator : MonoBehaviour
         {
             for (int j = 0; j < 10; j++)
             {
-                GameObject enemy = Instantiate(enemyPrefab,new Vector3(initPos.x + offset_x*j,initPos.y-offset_y*i),Quaternion.identity);
-                SetColor(enemy);
+                enemys[i,j] = Instantiate(enemyPrefab,new Vector3(initPos.x + offset_x*j,initPos.y-offset_y*i),Quaternion.identity);
+                SetColor(enemys[i, j]);
+                //enemys[i, j].name = i + "," + j;
             }
+            //
         }
     }
 
@@ -41,5 +49,40 @@ public class EnemyGenerator : MonoBehaviour
         int r = Random.Range(0, 4);
         spriteRenderer.color = colors[r];
         go.name = r.ToString();
+    }
+
+    void GenerateProjectile()
+    {
+        projectileEnemy = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity);
+        projectileEnemy.SetActive(false);
+
+    }
+
+    void Shoot()
+    {
+        Vector2 pos = GetEnemyShooter();
+        projectileEnemy.transform.position = pos + Vector2.down;
+        projectileEnemy.SetActive(true);
+    }
+
+    Vector2 GetEnemyShooter()
+    {
+        Vector2 v2 = Vector2.zero;
+        bool searching = true;
+        int r = 0;
+        while (searching)
+        {
+            r = Random.Range(0, 10);
+            searching = !enemys[0, r].activeSelf;
+        }
+        for (int i = 4; i > 0; i--)
+        {
+            if (enemys[i,r].activeSelf)
+            {
+                v2 = enemys[i, r].transform.position;
+                break;
+            }
+        }
+        return v2;
     }
 }
