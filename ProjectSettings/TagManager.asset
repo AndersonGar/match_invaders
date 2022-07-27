@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - Pj_Enemy
+  - Pj_Player
+  - Wall
   layers:
   - Default
   - TransparentFX

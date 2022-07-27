@@ -54,15 +54,14 @@ public class EnemyGenerator : MonoBehaviour
     void GenerateProjectile()
     {
         projectileEnemy = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity);
-        projectileEnemy.SetActive(false);
-
+        projectileEnemy.transform.parent = gameObject.transform;
     }
 
-    void Shoot()
+    public void Shoot()
     {
         Vector2 pos = GetEnemyShooter();
         projectileEnemy.transform.position = pos + Vector2.down;
-        projectileEnemy.SetActive(true);
+        projectileEnemy.GetComponent<ProjectileBehaviour>().StartMove();
     }
 
     Vector2 GetEnemyShooter()
