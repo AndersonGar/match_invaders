@@ -36,10 +36,11 @@ public class EnemyGenerator : MonoBehaviour
             for (int j = 0; j < 10; j++)
             {
                 enemys[i,j] = Instantiate(enemyPrefab,new Vector3(initPos.x + offset_x*j,initPos.y-offset_y*i),Quaternion.identity);
+                enemys[i, j].GetComponent<EnemyBehaviour>().SetIndex(i, j);
                 SetColor(enemys[i, j]);
+                enemys[i, j].transform.parent = transform;
                 //enemys[i, j].name = i + "," + j;
             }
-            //
         }
     }
 
@@ -83,5 +84,74 @@ public class EnemyGenerator : MonoBehaviour
             }
         }
         return v2;
+    }
+
+    public void EnemyCollide(int _i, int _j)
+    {
+        //Vertical Match 
+        int verticalMatches = 1;
+        for (int i = _i-1; i > 0; i--)
+        {
+            if (enemys[_i,_j].name != enemys[i,_j].name)
+            {
+                break;
+            }
+            else
+            {
+                enemys[i, _j].SetActive(false);
+                verticalMatches++;
+            }
+        }
+
+        //Horizontal Match
+        int horizontalMatches = 1;
+        //Right
+        for (int j = _j+1; j < 10; j++)
+        {
+            if (enemys[_i, _j].name != enemys[_i, j].name)
+            {
+                break;
+            }
+            else
+            {
+                enemys[_i, j].SetActive(false);
+                horizontalMatches++;
+            }
+        }
+        //Left
+        for (int j = _j-1; j >= 0; j--)
+        {
+            if (enemys[_i, _j].name != enemys[_i, j].name)
+            {
+                break;
+            }
+            else
+            {
+                enemys[_i, j].SetActive(false);
+                horizontalMatches++;
+            }
+        }
+        if (verticalMatches + horizontalMatches == 2)
+        {
+            CalculatePointUp(1);
+        }
+        else
+        {
+            CalculatePointUp(verticalMatches);
+            CalculatePointUp(horizontalMatches);
+        }
+    }
+
+    void CalculatePointUp(int enemies)
+    {
+        int prevNum = 0;
+        int nowNum = 1;
+        for (int i = 0; i < enemies; i++)
+        {
+            int temp = prevNum;
+            prevNum = nowNum;
+            nowNum = temp + prevNum;
+        }
+        Debug.Log(prevNum*10*enemies);
     }
 }

@@ -35,26 +35,32 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Enemy" && gameObject.tag =="Pj_Enemy")
+        if (gameObject.tag=="Pj_Enemy")
         {
-            return;
+            PjEnemy_Collisions(collision);
         }
-        move = false;
-        gameObject.SetActive(false);
-        if (collision.gameObject.tag == "Wall")
+        else if (gameObject.tag == "Pj_Player")
         {
-            if (gameObject.tag == "Pj_Enemy")
-            {
-                transform.parent.gameObject.GetComponent<EnemyGenerator>().Shoot();
-            }
-            else
-            {
-                owner.GetComponent<PlayerBehaviour>().AllowShoot();
-            }
+            PjPlayer_Collisions(collision);
         }
-        else if (collision.gameObject.tag == "Enemy")
+    }
+
+    void PjEnemy_Collisions(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Player")
         {
-            collision.gameObject.SetActive(false);
+            move = false;
+            gameObject.SetActive(false);
+            transform.parent.gameObject.GetComponent<EnemyGenerator>().Shoot();
+        }
+    }
+
+    void PjPlayer_Collisions(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy")
+        {
+            move = false;
+            gameObject.SetActive(false);
             owner.GetComponent<PlayerBehaviour>().AllowShoot();
         }
     }

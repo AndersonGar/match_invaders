@@ -48,4 +48,13 @@ public class EnemyBehaviour : MonoBehaviour
             time = secondsMovement;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Pj_Player")
+        {
+            gameObject.SetActive(false);
+            transform.parent.GetComponent<EnemyGenerator>().EnemyCollide(i, j);
+        }
+    }
 }

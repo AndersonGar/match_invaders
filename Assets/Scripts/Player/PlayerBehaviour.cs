@@ -20,6 +20,8 @@ public class PlayerBehaviour : MonoBehaviour
         Shoot();
     }
 
+
+
     void Movement()
     {
         float h_axis = Input.GetAxis("Horizontal");
