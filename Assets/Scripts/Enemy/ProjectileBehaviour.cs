@@ -51,7 +51,10 @@ public class ProjectileBehaviour : MonoBehaviour
         {
             move = false;
             gameObject.SetActive(false);
-            transform.parent.gameObject.GetComponent<EnemyGenerator>().Shoot();
+            if (transform.parent.gameObject.GetComponent<GameManager>().GameRunning())
+            {
+                transform.parent.gameObject.GetComponent<EnemyGenerator>().Shoot();
+            }
         }
     }
 

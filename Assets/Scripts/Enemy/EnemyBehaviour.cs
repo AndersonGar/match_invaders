@@ -8,17 +8,28 @@ public class EnemyBehaviour : MonoBehaviour
     public int secondsMovement;
     float time;
     int i, j;
+    bool move = false;
     // Start is called before the first frame update
     void Start()
     {
-        time = secondsMovement;
+        //time = secondsMovement;
     }
     
     // Update is called once per frame
     void Update()
     {
-        VerticalMovement();
-        HorizontalMovement();
+        if (move)
+        {
+            VerticalMovement();
+            HorizontalMovement();
+        }
+    }
+
+    public void AllowMove(bool allow)
+    {
+        move = allow;
+        speedHorizontal = Mathf.Abs(speedHorizontal);
+        time = secondsMovement;
     }
 
     public void SetIndex(int x, int y)
@@ -61,5 +72,12 @@ public class EnemyBehaviour : MonoBehaviour
             gameObject.SetActive(false);
             transform.parent.GetComponent<EnemyGenerator>().EnemyCollide(i, j);
         }
+
+        if (collision.tag == "Wall")
+        {
+            transform.parent.GetComponent<GameManager>().GameOver();
+        }
     }
+
+    
 }

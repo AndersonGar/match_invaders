@@ -6,20 +6,22 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public UIManager uiManager;
+    public List<WallBehaviour> listWalls;
     int score = 0;
     int record = 0;
-    int level = 0;
+    int level = 1;
     int live = 3;
     int walls = 4;
+    bool runGame = true;
 
     private void Awake()
     {
-        if (!PlayerPrefs.HasKey("record"))
+        if (!PlayerPrefs.HasKey("Record"))
         {
-            PlayerPrefs.SetInt("record", 0);
+            PlayerPrefs.SetInt("Record", 0);
             PlayerPrefs.Save();
         }
-        record = PlayerPrefs.GetInt("record");
+        record = PlayerPrefs.GetInt("Record");
     }
     // Start is called before the first frame update
     void Start()
@@ -69,17 +71,34 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void NextLevel()
+    public IEnumerator NextLevel()
     {
         level++;
+        walls = 0;
+        runGame = false;
+        yield return new WaitForSeconds(3);
+        foreach (var wall in listWalls)
+        {
+            wall.GetComponent<WallBehaviour>().Regenerate();
+        }
         SendMessage("RelocateEnemies");
+        runGame = true;
+    }
+
+    public bool GameRunning()
+    {
+        return runGame;
     }
 
     public void GameOver()
     {
+        runGame = false;
+        SendMessage("StopEnemies");
         if (score > record)
         {
             uiManager.ShowGameOver(true);
+            PlayerPrefs.SetInt("Record", score);
+            PlayerPrefs.Save();
         }
         else
         {

@@ -16,7 +16,7 @@ public class WallBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -31,9 +31,13 @@ public class WallBehaviour : MonoBehaviour
                 gameObject.SetActive(false);
             }
         }
-        else if (collision.tag == "Enemy")
-        {
-            gameManager.GameOver();
-        }
+    }
+
+    public void Regenerate()
+    {
+        live = 5;
+        float alfa = (float)live * 20 / 100;
+        gameObject.SetActive(true);
+        GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, alfa);
     }
 }

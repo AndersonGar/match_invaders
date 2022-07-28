@@ -44,8 +44,20 @@ public class EnemyGenerator : MonoBehaviour
         }
     }
 
-    void RelocateEnemies()
+    public void StopEnemies()
     {
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                enemys[i, j].GetComponent<EnemyBehaviour>().AllowMove(false);
+            }
+        }
+    }
+
+    public void RelocateEnemies()
+    {
+        activedEnemies = 50;
         for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < 10; j++)
@@ -53,6 +65,7 @@ public class EnemyGenerator : MonoBehaviour
                 SetupEnemy(enemys[i, j], i, j);
             }
         }
+        Shoot();
     }
 
     void SetupEnemy(GameObject enemy,int _i,int _j)
@@ -62,6 +75,7 @@ public class EnemyGenerator : MonoBehaviour
         int level = GetComponent<GameManager>().GetLevel();
         enemy.GetComponent<EnemyBehaviour>().SetSpeed(incrementSpeed * level);
         SetColor(enemy);
+        enemy.GetComponent<EnemyBehaviour>().AllowMove(true);
     }
 
     void SetColor(GameObject go)
@@ -88,18 +102,22 @@ public class EnemyGenerator : MonoBehaviour
     Vector2 GetEnemyShooter()
     {
         Vector2 v2 = Vector2.zero;
-        bool searching = true;
         int r = 0;
-        while (searching)
+        List<int> rows = new List<int>();
+        for (int i = 0; i < 10; i++)
         {
-            r = Random.Range(0, 10);
-            searching = !enemys[0, r].activeSelf;
+            if (enemys[0, i].activeSelf)
+            {
+                rows.Add(i);
+            }
         }
+        r = Random.Range(0, rows.Count);
+        int index = rows[r];
         for (int i = 4; i > 0; i--)
         {
-            if (enemys[i,r].activeSelf)
+            if (enemys[i,index].activeSelf)
             {
-                v2 = enemys[i, r].transform.position;
+                v2 = enemys[i, index].transform.position;
                 break;
             }
         }
@@ -112,7 +130,7 @@ public class EnemyGenerator : MonoBehaviour
         int verticalMatches = 1;
         for (int i = _i-1; i >= 0; i--)
         {
-            if (enemys[_i,_j].name != enemys[i,_j].name)
+            if (enemys[_i,_j].name != enemys[i,_j].name || !enemys[i, _j].activeSelf)
             {
                 break;
             }
@@ -125,14 +143,13 @@ public class EnemyGenerator : MonoBehaviour
         if (verticalMatches > 1)
         {
             CalculatePointUp(verticalMatches);
-            activedEnemies -= verticalMatches - 1;
         }
         //Horizontal Match
         int horizontalMatches = 1;
         //Right
         for (int j = _j+1; j < 10; j++)
         {
-            if (enemys[_i, _j].name != enemys[_i, j].name)
+            if (enemys[_i, _j].name != enemys[_i, j].name || !enemys[_i, j].activeSelf)
             {
                 break;
             }
@@ -145,7 +162,7 @@ public class EnemyGenerator : MonoBehaviour
         //Left
         for (int j = _j-1; j >= 0; j--)
         {
-            if (enemys[_i, _j].name != enemys[_i, j].name)
+            if (enemys[_i, _j].name != enemys[_i, j].name || !enemys[_i, j].activeSelf)
             {
                 break;
             }
@@ -158,17 +175,18 @@ public class EnemyGenerator : MonoBehaviour
         if (horizontalMatches > 1)
         {
             CalculatePointUp(horizontalMatches);
-            activedEnemies -= horizontalMatches - 1;
         }
         //If there isn't matches
         if (horizontalMatches+verticalMatches==2)
         {
             CalculatePointUp(horizontalMatches);
         }
-        activedEnemies--;
+        print("Prev: " + activedEnemies);
+        activedEnemies -=  ((horizontalMatches - 1) + (verticalMatches - 1) + 1);
+        print("Now: "+activedEnemies);
         if (activedEnemies <= 0)
         {
-            SendMessage("NextLevel");
+            StartCoroutine(GetComponent<GameManager>().NextLevel());
         }
     }
 
@@ -182,7 +200,7 @@ public class EnemyGenerator : MonoBehaviour
             prevNum = nowNum;
             nowNum = temp + prevNum;
         }
-        int totalPoint = prevNum * 10 * enemies;
+        int totalPoint = nowNum * 10 * enemies;
         SendMessage("ScoreUp", totalPoint);
     }
 }
