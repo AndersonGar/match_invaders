@@ -12,7 +12,7 @@ public class EnemyBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //time = secondsMovement;
+
     }
     
     // Update is called once per frame
@@ -31,6 +31,7 @@ public class EnemyBehaviour : MonoBehaviour
         speedHorizontal = Mathf.Abs(speedHorizontal);
         time = secondsMovement;
     }
+
 
     public void SetIndex(int x, int y)
     {

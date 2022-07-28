@@ -95,7 +95,7 @@ public class EnemyGenerator : MonoBehaviour
     public void Shoot()
     {
         Vector2 pos = GetEnemyShooter();
-        projectileEnemy.transform.position = pos + Vector2.down;
+        projectileEnemy.transform.position = pos;
         projectileEnemy.GetComponent<ProjectileBehaviour>().StartMove();
     }
 
@@ -106,9 +106,13 @@ public class EnemyGenerator : MonoBehaviour
         List<int> rows = new List<int>();
         for (int i = 0; i < 10; i++)
         {
-            if (enemys[0, i].activeSelf)
+            for (int j = 0; j < 5; j++)
             {
-                rows.Add(i);
+                if (enemys[j, i].activeSelf)
+                {
+                    print(i);
+                    rows.Add(i);
+                }
             }
         }
         r = Random.Range(0, rows.Count);
@@ -126,6 +130,7 @@ public class EnemyGenerator : MonoBehaviour
 
     public void EnemyCollide(int _i, int _j)
     {
+        GetComponent<AudioSource>().Play();
         //Vertical Match 
         int verticalMatches = 1;
         for (int i = _i-1; i >= 0; i--)
@@ -181,9 +186,7 @@ public class EnemyGenerator : MonoBehaviour
         {
             CalculatePointUp(horizontalMatches);
         }
-        print("Prev: " + activedEnemies);
         activedEnemies -=  ((horizontalMatches - 1) + (verticalMatches - 1) + 1);
-        print("Now: "+activedEnemies);
         if (activedEnemies <= 0)
         {
             StartCoroutine(GetComponent<GameManager>().NextLevel());

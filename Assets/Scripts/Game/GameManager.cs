@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public UIManager uiManager;
     public List<WallBehaviour> listWalls;
+    AudioSource audioSource;
     int score = 0;
     int record = 0;
     int level = 1;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         record = PlayerPrefs.GetInt("Record");
+        audioSource = GetComponent<AudioSource>();
     }
     // Start is called before the first frame update
     void Start()
@@ -55,6 +57,7 @@ public class GameManager : MonoBehaviour
     public void LiveDown()
     {
         live--;
+        audioSource.Play();
         uiManager.UpdateLive(live);
         if (live <= 0)
         {
@@ -65,6 +68,7 @@ public class GameManager : MonoBehaviour
     public void WallDown()
     {
         walls--;
+        audioSource.Play();
         if (walls <= 0)
         {
             GameOver();
@@ -74,7 +78,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator NextLevel()
     {
         level++;
-        walls = 0;
+        walls = 4;
         runGame = false;
         yield return new WaitForSeconds(3);
         foreach (var wall in listWalls)
@@ -94,6 +98,7 @@ public class GameManager : MonoBehaviour
     {
         runGame = false;
         SendMessage("StopEnemies");
+        audioSource.Play();
         if (score > record)
         {
             uiManager.ShowGameOver(true);

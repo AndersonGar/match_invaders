@@ -10,7 +10,6 @@ public class ProjectileBehaviour : MonoBehaviour
     bool move = false;
     GameObject owner;
 
-
     public enum ProjectileDirection
     {
         Up,
