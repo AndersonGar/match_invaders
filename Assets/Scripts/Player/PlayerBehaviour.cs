@@ -9,6 +9,7 @@ public class PlayerBehaviour : MonoBehaviour
     public float speed;
     public GameObject projectile;
     bool may_shoot = true;
+    public float minHor, maxHor;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +30,15 @@ public class PlayerBehaviour : MonoBehaviour
     {
         float h_axis = Input.GetAxis("Horizontal");
         Vector2 vDir = new Vector2(h_axis,0f);
+        float y = transform.position.y;
+        if (transform.position.x < minHor)
+        {
+            transform.position = new Vector2(minHor,y);
+        }
+        if (transform.position.x > maxHor)
+        {
+            transform.position = new Vector2(maxHor, y);
+        }
         transform.Translate(vDir * speed * Time.deltaTime);
     }
 

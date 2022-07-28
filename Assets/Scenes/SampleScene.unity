@@ -1110,6 +1110,8 @@ MonoBehaviour:
   gameManager: {fileID: 922389857}
   speed: 5
   projectile: {fileID: 1437149629}
+  minHor: -6
+  maxHor: 6
 --- !u!61 &1121126878
 BoxCollider2D:
   m_ObjectHideFlags: 0
