@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    public GameManager gameManager;
     public float speed;
     public GameObject projectile;
     bool may_shoot = true;
@@ -37,6 +38,14 @@ public class PlayerBehaviour : MonoBehaviour
             projectile.transform.position = gameObject.transform.position + Vector3.up;
             projectile.SetActive(true);
             projectile.GetComponent<ProjectileBehaviour>().StartMove();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag=="Pj_Enemy")
+        {
+            gameManager.LiveDown();
         }
     }
 

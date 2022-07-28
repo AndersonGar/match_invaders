@@ -8,13 +8,12 @@ public class EnemyBehaviour : MonoBehaviour
     public int secondsMovement;
     float time;
     int i, j;
-    GameObject projectile;
     // Start is called before the first frame update
     void Start()
     {
         time = secondsMovement;
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -27,6 +26,12 @@ public class EnemyBehaviour : MonoBehaviour
         i = x;
         j = y;
     }
+
+    public void SetSpeed(float increment)
+    {
+        speedVertical *= increment;
+    }
+
 
     void VerticalMovement()
     {

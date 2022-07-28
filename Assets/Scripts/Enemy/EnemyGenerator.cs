@@ -7,13 +7,15 @@ public class EnemyGenerator : MonoBehaviour
     //Enemy instances
     public GameObject enemyPrefab;
     public List<Color> colors;
+    GameObject[,] enemys = new GameObject[5, 10];
+    int activedEnemies = 50;
+    public float incrementSpeed;
     //Projectile instance
     public GameObject projectilePrefab;
     GameObject projectileEnemy;
     //Ubication Variables
     public Vector2 initPos;
     public float offset_x, offset_y;
-    GameObject[,] enemys = new GameObject[5, 10];
 
     // Start is called before the first frame update
     void Start()
@@ -35,13 +37,31 @@ public class EnemyGenerator : MonoBehaviour
         {
             for (int j = 0; j < 10; j++)
             {
-                enemys[i,j] = Instantiate(enemyPrefab,new Vector3(initPos.x + offset_x*j,initPos.y-offset_y*i),Quaternion.identity);
+                enemys[i,j] = Instantiate(enemyPrefab,transform);
                 enemys[i, j].GetComponent<EnemyBehaviour>().SetIndex(i, j);
-                SetColor(enemys[i, j]);
-                enemys[i, j].transform.parent = transform;
-                //enemys[i, j].name = i + "," + j;
+                SetupEnemy(enemys[i, j],i,j);
             }
         }
+    }
+
+    void RelocateEnemies()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                SetupEnemy(enemys[i, j], i, j);
+            }
+        }
+    }
+
+    void SetupEnemy(GameObject enemy,int _i,int _j)
+    {
+        enemy.SetActive(true);
+        enemy.transform.position = new Vector3(initPos.x + offset_x * _j, initPos.y - offset_y * _i);
+        int level = GetComponent<GameManager>().GetLevel();
+        enemy.GetComponent<EnemyBehaviour>().SetSpeed(incrementSpeed * level);
+        SetColor(enemy);
     }
 
     void SetColor(GameObject go)
@@ -90,7 +110,7 @@ public class EnemyGenerator : MonoBehaviour
     {
         //Vertical Match 
         int verticalMatches = 1;
-        for (int i = _i-1; i > 0; i--)
+        for (int i = _i-1; i >= 0; i--)
         {
             if (enemys[_i,_j].name != enemys[i,_j].name)
             {
@@ -102,7 +122,11 @@ public class EnemyGenerator : MonoBehaviour
                 verticalMatches++;
             }
         }
-
+        if (verticalMatches > 1)
+        {
+            CalculatePointUp(verticalMatches);
+            activedEnemies -= verticalMatches - 1;
+        }
         //Horizontal Match
         int horizontalMatches = 1;
         //Right
@@ -131,14 +155,20 @@ public class EnemyGenerator : MonoBehaviour
                 horizontalMatches++;
             }
         }
-        if (verticalMatches + horizontalMatches == 2)
+        if (horizontalMatches > 1)
         {
-            CalculatePointUp(1);
-        }
-        else
-        {
-            CalculatePointUp(verticalMatches);
             CalculatePointUp(horizontalMatches);
+            activedEnemies -= horizontalMatches - 1;
+        }
+        //If there isn't matches
+        if (horizontalMatches+verticalMatches==2)
+        {
+            CalculatePointUp(horizontalMatches);
+        }
+        activedEnemies--;
+        if (activedEnemies <= 0)
+        {
+            SendMessage("NextLevel");
         }
     }
 
@@ -152,6 +182,7 @@ public class EnemyGenerator : MonoBehaviour
             prevNum = nowNum;
             nowNum = temp + prevNum;
         }
-        Debug.Log(prevNum*10*enemies);
+        int totalPoint = prevNum * 10 * enemies;
+        SendMessage("ScoreUp", totalPoint);
     }
 }
